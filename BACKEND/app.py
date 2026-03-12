@@ -21,14 +21,10 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
     app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
     
+    origins = os.getenv('ORIGINS', "http://localhost:3000").split(',')
     # CORS
     CORS(app, 
-         origins=[
-             "http://localhost:3000",
-             "http://localhost:3001",
-             "https://your-app.vercel.app",
-             "https://stockai-frontend.vercel.app"
-         ], 
+         origins=origins,
          supports_credentials=True,
          allow_headers=["Content-Type", "Authorization"],
          methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"])

@@ -1,12 +1,20 @@
+import os
+
 import pymysql
 from contextlib import contextmanager
 
+host = os.getenv('DB_HOST')
+port = int(os.getenv('DB_PORT', 3306))
+user = os.getenv('DB_USER')
+password = os.getenv('DB_PASSWORD')
+database = os.getenv('DB_NAME') 
+
 DB_CONFIG = {
-    'host': 'as1.nerdysid.in',
-    'port': 3306,
-    'user': 'u52_kEHM6sVuxm',
-    'password': 'E!YjjGbYsHSe3u^x0na@ECj9',
-    'database': 's52_auth',
+    'host': host,
+    'port': port,
+    'user': user,
+    'password': password,
+    'database': database,
     'charset': 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor,
     'autocommit': False,
