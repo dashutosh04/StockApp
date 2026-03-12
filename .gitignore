@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+
+BACKEND/venv/
+.env
+BACKEND/model/saved/*.pkl
+*/__pycache__/
+*.pyc
+*/.DS_Store
+*/test_model.py
+
+BACKEND/model/saved/*
