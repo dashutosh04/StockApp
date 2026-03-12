@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { TrendingUp, Eye, EyeOff, Loader2, Check } from 'lucide-react'
+import { signup } from '@/lib/api'
 
 export default function SignupPage() {
   const router                 = useRouter()
@@ -37,40 +38,35 @@ export default function SignupPage() {
     setLoading(true)
 
     try {
-      if (typeof window === 'undefined') return
-      
       if (password.length < 6) {
         setError('Password must be at least 6 characters')
         setLoading(false)
         return
       }
 
-      // Get existing users
-      const users = JSON.parse(
-        localStorage.getItem('stockai_users') || '[]'
-      )
-
-      // Check if email exists
-      if (users.find((u: any) => u.email === email)) {
-        setError('Email already registered')
-        setLoading(false)
-        return
+      const response = await signup(name, email, password)
+      
+      if (response && response.length > 0 && response[0].data) {
+        const { user, access_token, refresh_token } = response[0].data
+        
+        // Store tokens and user info
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('access_token', access_token)
+          localStorage.setItem('refresh_token', refresh_token)
+          localStorage.setItem('stockai_user', JSON.stringify(user))
+        }
+        
+        router.push('/dashboard')
+      } else {
+        setError('Signup failed. Please try again.')
       }
 
-      // Add new user
-      users.push({ name, email, password, watchlist: [] })
-      localStorage.setItem('stockai_users', JSON.stringify(users))
-
-      // Save session
-      localStorage.setItem(
-        'stockai_user',
-        JSON.stringify({ name, email })
-      )
-
-      router.push('/dashboard')
-
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
+    } catch (err: any) {
+      console.error('Signup error:', err)
+      const errorMsg = err?.response?.data?.error?.[0] || 
+                       err?.response?.data?.message || 
+                       'Signup failed. Please try again.'
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { TrendingUp, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { login } from '@/lib/api'
 
 export default function LoginPage() {
   const router               = useRouter()
@@ -20,32 +21,29 @@ export default function LoginPage() {
     setLoading(true)
 
     try {
-      if (typeof window === 'undefined') return
+      const response = await login(email, password)
       
-      // Store user in localStorage (simple auth for lab project)
-      const users = JSON.parse(
-        localStorage.getItem('stockai_users') || '[]'
-      )
-      const user = users.find(
-        (u: any) => u.email === email && u.password === password
-      )
-
-      if (!user) {
-        setError('Invalid email or password')
-        setLoading(false)
-        return
+      if (response && response.length > 0 && response[0].data) {
+        const { user, access_token, refresh_token } = response[0].data
+        
+        // Store tokens and user info
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('access_token', access_token)
+          localStorage.setItem('refresh_token', refresh_token)
+          localStorage.setItem('stockai_user', JSON.stringify(user))
+        }
+        
+        router.push('/dashboard')
+      } else {
+        setError('Login failed. Please try again.')
       }
 
-      // Save session
-      localStorage.setItem(
-        'stockai_user',
-        JSON.stringify({ name: user.name, email: user.email })
-      )
-
-      router.push('/dashboard')
-
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
+    } catch (err: any) {
+      console.error('Login error:', err)
+      const errorMsg = err?.response?.data?.error?.[0] || 
+                       err?.response?.data?.message || 
+                       'Login failed. Please check your credentials.'
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }

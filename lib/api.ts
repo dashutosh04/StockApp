@@ -99,3 +99,51 @@ export async function getWatchlistQuotes(
   )
   return extractData(res)
 }
+
+export async function signup(name: string, email: string, password: string) {
+  const res = await api.post('/api/auth/signup', { name, email, password })
+  return res.data
+}
+
+export async function login(email: string, password: string) {
+  const res = await api.post('/api/auth/login', { email, password })
+  return res.data
+}
+
+export async function getCurrentUser(token: string) {
+  const res = await api.get('/api/auth/me', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return res.data
+}
+
+export async function getUserWatchlist(token: string) {
+  const res = await api.get('/api/user/watchlist', {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  return extractData(res)
+}
+
+export async function addToUserWatchlist(token: string, symbol: string) {
+  const res = await api.post('/api/user/watchlist/add', 
+    { symbol }, 
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+  return res.data
+}
+
+export async function removeFromUserWatchlist(token: string, symbol: string) {
+  const res = await api.delete('/api/user/watchlist/remove', {
+    headers: { Authorization: `Bearer ${token}` },
+    data: { symbol }
+  })
+  return res.data
+}
+
+export async function toggleUserWatchlist(token: string, symbol: string) {
+  const res = await api.post('/api/user/watchlist/toggle', 
+    { symbol }, 
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+  return extractData(res)
+}
