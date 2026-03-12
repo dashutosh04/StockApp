@@ -49,18 +49,14 @@ export default function TechnicalIndicators({
   const indicators = [
     {
       label   : 'MA5',
-      value   : `
-$$
-{ma5}`,
+      value   : `$${ma5}`,
       sub     : '5-day avg',
       color   : 'text-primary',
       badge   : null,
     },
     {
       label   : 'MA10',
-      value   : `
-$$
-{ma10}`,
+      value   : `$${ma10}`,
       sub     : '10-day avg',
       color   : 'text-primary',
       badge   : null,
